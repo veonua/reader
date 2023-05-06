@@ -1,18 +1,24 @@
 {
-  "name": "first",
+  "repository": "https://github.com/veonua/reader",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "me",
   "license": "ISC",
+  "platform": "node",
   "dependencies": {
     "@mozilla/readability": "^0.4.4",
     "@pinecone-database/pinecone": "^0.0.14",
     "express": "^4.18.2",
     "jsdom": "^22.0.0",
     "youtube-captions-scraper": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.42",
+    "typescript": "^4.7.3"
   }
 }
+
+
