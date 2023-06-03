@@ -1,4 +1,6 @@
 .vercel
+.vscode
+package-lock.json
 # Logs
 logs
 *.log

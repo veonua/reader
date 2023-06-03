@@ -8,7 +8,6 @@ let _index: VectorOperationsApi;
 
 async function getIndex(): Promise<VectorOperationsApi> {
   if (!_index) {
-    console.log("Index not found, creating...");
     _index = await initialize();
   }
   return _index;
@@ -26,13 +25,13 @@ async function initialize(): Promise<VectorOperationsApi> {
     pinecone.create_index('openai', dimension=len(embeds[0]))
     */
 
-    let index = pinecone.Index(process.env.INDEX_NAME || "");
+    let index_name = process.env.INDEX_NAME || "";
+    let index = pinecone.Index(index_name);
     if (index === undefined) {
-      console.log("Index not found, creating...");
+      console.log(`Index not found, creating '${index_name}'`);
       throw new Error("Index not found");
-    } else {
-      console.log("Index found");
     }
+    
     return index;
   } catch (e) {
     console.log("failed", e);

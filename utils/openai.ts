@@ -30,8 +30,7 @@ export async function answerQuestion(question: string, context: string, topic:st
   }
 
   let prompt = `Use the below articles${topic} to answer the question "${question}". If the answer cannot be found in the articles, write "I could not find an answer. \n${context}\nAnswer:`
-  console.log(" >"+prompt);
-
+  
   const res = await openai.createCompletion({
     prompt: prompt,
     model: COMPLETEION_MODEL,
@@ -39,5 +38,5 @@ export async function answerQuestion(question: string, context: string, topic:st
     n: 1,}
   );
 
-  return res.data.choices[0].text;
+  return res.data.choices[0].text.trimStart();
 }
