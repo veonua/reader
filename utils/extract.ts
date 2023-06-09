@@ -75,7 +75,7 @@ export class ExtractResult {
   }
   
 
-export async function extract(uri:string, max_length:number, max_duration:number, no_cache:boolean = false) : Promise<ExtractResult> {
+export async function extract(uri:URL, max_length:number, max_duration:number, no_cache:boolean = false, lang:string="en") : Promise<ExtractResult> {
     var data = await kv.get<ExtractResult>("d:"+uri);
     if (data != null && !no_cache) {
         return data;
@@ -83,18 +83,28 @@ export async function extract(uri:string, max_length:number, max_duration:number
 
     console.log("extracting from " + uri);
     // if uri is youtube video, get the video subtitles
-    if (uri.includes("youtube")) {
-        let id = uri.split("v=")[1];
+    if (uri.hostname === "www.youtube.com") {
+      let id = uri.searchParams.get("v");
 
-        var captions = await getSubtitles({
-            videoID: uri.split("v=")[1],
+      if (uri.pathname != "/watch" || id == null) {
+        throw new Error("Invalid youtube url "+uri.toString() + " " + uri.pathname + " " + id);
+      }
+      
+      let cleanUri = uri.origin + uri.pathname + "?v=" + id;
+
+        try {
+          var captions = await getSubtitles({
+            videoID: id,
+            lang: lang, // default: `en`
           })
         
-        const res = new ExtractResult("youtube", getChunks( captions ));
-        kv.set("d:"+uri, JSON.stringify(res));
-
-        return res;
-
+          const res = new ExtractResult("youtube", getChunks( captions ));
+          kv.set("d:"+cleanUri, JSON.stringify(res));
+          return res;
+        } catch (e) {
+          console.log(e);
+          throw new Error("Error extracting from youtube");
+        }
     } else {
         const response = await fetch(uri);
         const html = await response.text();

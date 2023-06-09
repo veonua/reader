@@ -1,7 +1,8 @@
 import { extract } from '../utils/extract';
+import { normalizeUrl } from '../utils/url';
 
 interface ExtractParams {
-  uri: string;
+  url: string;
   max_length: number;
   max_duration: number;
   no_cache: boolean;
@@ -11,8 +12,10 @@ export default async function handler(
   req: any,
   res: any
 ): Promise<void> {
-  const { uri, max_length, max_duration, no_cache }: ExtractParams = req.body;
+  const { url, max_length, max_duration, no_cache }: ExtractParams = req.body;
 
-  const data = await extract(uri, max_length, max_duration, no_cache);
+  let goodUrl = normalizeUrl(url);
+
+  const data = await extract(goodUrl, max_length, max_duration, no_cache);
   res.json(data);
 }

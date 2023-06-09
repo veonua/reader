@@ -5,7 +5,7 @@ import kv from "@vercel/kv";
 
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 
-export async function getEmbeddings(uri: string, data:ExtractResult, no_cache: boolean = false) {
+export async function getEmbeddings(uri: URL, data:ExtractResult, no_cache: boolean = false) {
   const embedding_key = "e:" + uri;
   var embeddings = await kv.get<number[][]>(embedding_key);
   if (embeddings != null && !no_cache) {
@@ -47,7 +47,7 @@ export async function getEmbeddings(uri: string, data:ExtractResult, no_cache: b
     }
   });
 
-  await saveEmbeddings(uri, records);
+  await saveEmbeddings(uri.toString(), records);
 
   kv.set(embedding_key, JSON.stringify(embeddings));  
 }
