@@ -1,6 +1,6 @@
 
 export function normalizeUrl(value: string): URL {
-    if (!value.startsWith("http://") && !value.startsWith("https://")) {
+    if (value ===undefined || (!value.startsWith("http://") && !value.startsWith("https://"))) {
         throw new URIError("Invalid url");
     }
     let url = new URL(value);

@@ -44,7 +44,7 @@ export default async function handler(req, res) {
       let value = values.map((v) => "<"+ v.timecode+"> " + v.content);
       let answer = await answerQuestion(ask, value);
 
-      res.json({answer});
+      res.json({answer, values});
     } catch (e) {
       console.log(e);
       res.status(500).json({ error: e.message, type: e.name });
