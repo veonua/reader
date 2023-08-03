@@ -1,5 +1,6 @@
 import { extract } from '../utils/extract';
 import { normalizeUrl } from '../utils/url';
+import axios from 'axios';
 
 interface ExtractParams {
   url: string;
@@ -14,8 +15,30 @@ export default async function handler(
 ): Promise<void> {
   const { url, max_length, max_duration, no_cache }: ExtractParams = req.body;
 
-  let goodUrl = normalizeUrl(url);
+  try {
+    let goodUrl = normalizeUrl(url);
+  
+    const data = await extract(goodUrl, max_length, max_duration, no_cache);
+    res.json(data);
+  }  catch (e) {
 
-  const data = await extract(goodUrl, max_length, max_duration, no_cache);
-  res.json(data);
+    if (e instanceof URIError) {
+      res.status(400).json({ error: e.message });
+      return;
+    }
+
+    const code = e.code;
+    if (code === 'ECONNABORTED') {
+      res.status(504).json({ error: 'Timeout' });
+      return;
+    }
+
+    if (axios.isAxiosError(e)) {
+      const status = e.response?.status;
+      res.status(status).json({ error: e.message });
+      return;
+    }
+
+    res.status(500).json({ error: e });
+  }
 }

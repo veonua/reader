@@ -2,6 +2,7 @@ import { JSDOM } from "jsdom";
 import { Readability } from "@mozilla/readability";
 import { getSubtitles } from "youtube-captions-scraper";
 import kv from "@vercel/kv";
+import axios from 'axios';
 
 class Chunk {
     text: string;
@@ -106,7 +107,13 @@ export async function extract(uri:URL, max_length:number, max_duration:number, n
           throw new Error("Error extracting from youtube");
         }
     } else {
-        const response = await fetch(uri);
+      const instance = axios.create({
+        //baseURL: 'https://some-domain.com/api/',
+        timeout: 10000,
+      });
+        const response = await instance.get(uri.toString())
+          .then(res => res.data);
+
         const html = await response.text();
         const doc = new JSDOM(html);
         const reader = new Readability(doc.window.document);
