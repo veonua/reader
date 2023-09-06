@@ -79,6 +79,7 @@ export class ExtractResult {
 export async function extract(uri:URL, max_length:number, max_duration:number, no_cache:boolean = false, lang:string="en") : Promise<ExtractResult> {
     var data = await kv.get<ExtractResult>("d:"+uri);
     if (data != null && !no_cache) {
+        console.log("using cache for " + uri);
         return data;
     }
 
@@ -124,13 +125,13 @@ export async function extract(uri:URL, max_length:number, max_duration:number, n
         }
 
         const res = new ExtractResult("article", {
-            textContent: article.textContent,
-            title: article.title,
-            byline: article.byline,
+            textContent: article.textContent?.trim(),
+            title: article.title?.trim(),
+            byline: article.byline?.trim(),
             length: article.length,
-            excerpt: article.excerpt,
-            siteName: article.siteName,
-            language: article.lang, 
+            excerpt: article.excerpt?.trim(),
+            siteName: article.siteName?.trim(),
+            language: article.lang?.trim(), 
             });
         kv.set("d:"+uri, JSON.stringify(res));
         return res;
