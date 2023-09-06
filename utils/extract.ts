@@ -107,14 +107,14 @@ export async function extract(uri:URL, max_length:number, max_duration:number, n
           throw new Error("Error extracting from youtube");
         }
     } else {
-      const instance = axios.create({
-        //baseURL: 'https://some-domain.com/api/',
-        timeout: 10000,
-      });
-        const response = await instance.get(uri.toString())
-          .then(res => res.data);
+        const instance = axios.create({
+          timeout: 10000,
+        });
+        const response = await instance.get(uri.toString()); // .then(res => res.data);
 
-        const html = await response.text();
+        console.log("got response:");
+        console.log(response.status);
+        const html = await response.data;
         const doc = new JSDOM(html);
         const reader = new Readability(doc.window.document);
         var article = reader.parse();
